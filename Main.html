@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes App</title>
+  <style>
+.search {
+    background-color: #3478F5;
+    border-radius: 10px;
+    border: 1px solid #1c1c1d;
+    box-sizing: border-box;
+    padding: 5px;
+    margin: 3px;
+    height: auto;
+    width: auto;
+    font-size: 16px;
+    display: inline-block;
+    text-align: center;
+}
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1c1c1d;
+      color: white;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      width: 80%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    .notes {
+      background-color: #444;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      min-height: 200px;
+      overflow-y: auto;
+    }
+
+    .note {
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .note button {
+      background-color: #3478F5;
+    border-radius: 10px;
+    border: 1px solid #444;
+    box-sizing: border-box;
+    padding: 5px;
+    margin: 3px;
+    height: auto;
+    width: auto;
+    font-size: 16px;
+    display: inline-block;
+    text-align: center;
+    }
+
+    textarea {
+      padding: 5px;
+            border: 1px solid #1c1c1d;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin: 3px;
+            height: auto;
+            width: auto;
+            background-color: #6F7073;
+    }
+
+    button {
+      background-color: #008080;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+<h1>Notes+</h1> <br>
+    <div class="notes" id="notes"></div>
+    <textarea id="noteInput" placeholder="Type your note here..."></textarea> <br>
+    <button onclick="saveNote()" class = "search">Save Note</button> <br> <h3>Report any suggestions or bugs at quinndevfacthound@gmail.com</h3> <h3>Thanks For Using Notes+</h3>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      loadNotes();
+    });
+
+    function loadNotes() {
+      const notesContainer = document.getElementById('notes');
+      const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+
+      notesContainer.innerHTML = savedNotes.map((note, index) => {
+        const firstThreeWords = note.split(' ').slice(0, 3).join(' ');
+        return `
+          <div class="note">
+            <div style="display: none;">${note}</div>
+            <button onclick="viewNote(${index})">${firstThreeWords}</button>
+            <button onclick="editNote(${index})">Edit</button>
+            <button onclick="deleteNote(${index})">Delete</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function saveNote() {
+      const noteInput = document.getElementById('noteInput');
+      const notesContainer = document.getElementById('notes');
+      const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+
+      const newNote = noteInput.value.trim();
+      if (newNote !== '') {
+        savedNotes.push(newNote);
+        localStorage.setItem('notes', JSON.stringify(savedNotes));
+        noteInput.value = '';
+        loadNotes();
+      }
+    }
+
+    function viewNote(index) {
+      const notesContainer = document.getElementById('notes');
+      const noteDiv = notesContainer.children[index].children[0];
+      alert(noteDiv.textContent);
+    }
+
+    function editNote(index) {
+      const notesContainer = document.getElementById('notes');
+      const noteDiv = notesContainer.children[index].children[0];
+      const editedNote = prompt('Edit the note:', noteDiv.textContent);
+      if (editedNote !== null) {
+        const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+        savedNotes[index] = editedNote.trim();
+        localStorage.setItem('notes', JSON.stringify(savedNotes));
+        loadNotes();
+      }
+    }
+
+    function deleteNote(index) {
+      const savedNotes = JSON.parse(localStorage.getItem('notes')) || [];
+      savedNotes.splice(index, 1);
+      localStorage.setItem('notes', JSON.stringify(savedNotes));
+      loadNotes();
+    }
+  </script>
+</body>
+</html>
